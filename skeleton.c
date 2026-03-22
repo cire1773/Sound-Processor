@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <math.h>
+
+#define PI 3.14159265358979323846
 
 #pragma pack(push, 1)
 
@@ -73,6 +76,53 @@ void writeAudioData(const char *filename, WavHeader header, double *audioData, u
     fclose(fp);
 }
 
+Complex add(Complex a, Complex b){
+    Complex c;
+    c.real = a.real + b.real;
+    c.imag = a.imag + b.imag;
+    return c;
+}
+
+Complex sub(Complex a, Complex b){
+    Complex c;
+    c.real = a.real - b.real;
+    c.imag = a.imag - b.imag;
+    return c;
+}
+
+Complex multiply(Complex a, Complex b){
+    Complex c;
+    c.real = (a.real * b.real) - (a.imag * b.imag);
+    c.imag = (a.real * b.imag) + (a.imag * b.real);
+    return c;
+}
+
+void fft(Complex *X, int N){
+    if(N <= 1)
+        return;
+    Complex *even = malloc((N / 2) * sizeof(Complex));
+    Complex *odd = malloc((N / 2) * sizeof(Complex));
+    for(int i = 0; i <= (N/2) - 1; i++){
+        even[i] = X[i * 2];
+        odd[i] = X[i * 2 + 1];
+    }
+    fft(even, N / 2);
+    fft(odd, N / 2);
+    for(int k = 0; k <= N / 2 - 1; k++){
+        double teta = (-2 * PI * k) / N;
+        Complex W;
+        W.real = cos(teta);
+        W.imag = sin(teta);
+        Complex t = multiply(W, odd[k]);
+        X[k] = add(even[k], t);
+        X[k + N / 2] = sub(even[k], t);
+    }
+    free(even);
+    free(odd);
+}
+
+
+
 
 
 int main(int argc, char *argv[]){
@@ -89,9 +139,6 @@ int main(int argc, char *argv[]){
             return 1;
         }
         WavHeader header = readHeader(fp);
-        printf("Sample Rate: %u Hz\n", header.sampleRate);
-        printf("Marker data: %.4s\n", header.subChunk2Id);
-        printf("Marime subChunk2: %u byti\n", header.subChunk2Size);
         uint32_t numSamples = 0;
         double *audio_data = readAudioData(fp, header, &numSamples);
         printf("We have %u samples\n", numSamples);
