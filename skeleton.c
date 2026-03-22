@@ -121,21 +121,43 @@ void fft(Complex *X, int N){
     free(odd);
 }
 
-
+void ifft(Complex *X, int N){
+    if(N <= 1)
+        return;
+    Complex *even = malloc((N / 2) * sizeof(Complex));
+    Complex *odd = malloc((N / 2) * sizeof(Complex));
+    for(int i = 0; i <= (N/2) - 1; i++){
+        even[i] = X[i * 2];
+        odd[i] = X[i * 2 + 1];
+    }
+    ifft(even, N / 2);
+    ifft(odd, N / 2);
+    for(int k = 0; k <= N / 2 - 1; k++){
+        double teta = (2 * PI * k) / N;
+        Complex W;
+        W.real = cos(teta);
+        W.imag = sin(teta);
+        Complex t = multiply(W, odd[k]);
+        X[k] = add(even[k], t);
+        X[k + N / 2] = sub(even[k], t);
+    }
+    free(even);
+    free(odd);
+}
 
 
 
 int main(int argc, char *argv[]){
 
     if(argc != 2){
-        printf("! Error !\n");
-        printf("The command should be: ./skeleton <audio.wav>");
+        printf("\n! Error !\n");
+        printf("The command should be: ./skeleton <audio.wav>\n");
         return 1;
     }
     else{
         FILE *fp = fopen(argv[1], "rb");
         if(fp == NULL){
-            printf("Error: The file %s can't be opened", argv[1]);
+            printf("\nError: The file %s can't be opened\n", argv[1]);
             return 1;
         }
         WavHeader header = readHeader(fp);
