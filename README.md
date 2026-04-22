@@ -31,8 +31,10 @@ Pentru a compila si testa cu succes codul, trebuie linkata biblioteca de matemat
 
 ```bash
 gcc -Wall procesor.c -o procesor_audio -lm
+```
 
 **Rulare:**
 
 ```bash
 ./procesor_audio test.wav
+```
