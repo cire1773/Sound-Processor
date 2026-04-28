@@ -18,6 +18,11 @@ The **FFT** is an efficient algorithm to compute the Discrete Fourier Transform 
 ### 3. Inverse Fast Fourier Transform (IFFT)
 The **IFFT** performs the reverse operation of the FFT. It converts the frequency domain representation back into the time domain (audio samples). This is essential for hearing the result of any frequency-based modifications.
 
+### 4. Delay & Echo
+The program now includes implementations for time-domain effects:
+- **Delay**: A feed-forward effect that mixes the original signal with a single delayed version.
+- **Echo**: A feedback-based effect where the delayed signal is fed back into the processor, creating a decaying series of repetitions.
+
 ---
 
 ## How it was Made
@@ -35,12 +40,12 @@ The architecture is designed to be modular:
 ### Compilation
 To compile the program, use a C compiler (like GCC):
 ```bash
-gcc skeleton.c -o skeleton -lm
+gcc SoundProc.c -o SoundProc -lm
 ```
 
 ### Running
 ```bash
-./skeleton <input_file.wav>
+./SoundProc <input_file.wav>
 ```
 The program will read the input, process the samples, and generate an `output.wav`.
 
@@ -57,7 +62,6 @@ We are continuously working to expand SoundProc's capabilities:
 
 ### 2. Audio Effects
 We plan to implement several classic DSP effects:
-- **Delay & Echo**: Time-delayed signal mixing and feedback-based decay.
 - **Reverb**: Environmental acoustic simulation.
 - **Filters**: Low-pass, High-pass, and Band-pass filters.
 - **Normalization/Gain**: Dynamic range adjustment.
